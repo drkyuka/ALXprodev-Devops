@@ -2,6 +2,17 @@
 base_dir="./pokemon_data"
 if [[ ! -d $base_dir ]]; then
     mkdir -p $base_dir
+else
+    echo "Directory $base_dir already exists. Proceeding with data fetching..."
+    echo "Clearing existing files in $base_dir..."
+    rm -vf $base_dir/*.json
+
+    if [[ $? -eq 0 ]]; then
+        echo "Existing files cleared."
+    else
+        echo "Failed to clear existing files in $base_dir. Exiting script."
+        exit 1
+    fi
 fi
 
 for pokemon in bulbasaur ivysaur venusaur charmander charmeleon
@@ -9,14 +20,26 @@ do
     echo "Fetching data for $pokemon..."
     file="${pokemon}.json"  # Use pokemon name for the filename
     full_path="$base_dir/$file"
-    response=$(curl -s -o $full_path --max-time 10 -w '%{http_code}' https://pokeapi.co/api/v2/pokemon/$pokemon 2> /dev/null)
+    retries=0
+    max_retries=3
+    while [[ ! -s $full_path && $retries -lt $max_retries ]]; do
+        echo "Attempting to download $pokemon data (Attempt: $((retries + 1)))"
+        response=$(curl -s -o $full_path --max-time 10 -w '%{http_code}' https://pokeapi.co/api/v2/pokemon/$pokemon 2> /dev/null)
 
-    if [[ "$response" -lt 200 || "$response" -ge 300 ]]; then
-        echo "Request failed with response code: $response" >> ./errors.txt
-    fi 
+        if [[ "$response" -lt 200 || "$response" -ge 300 ]]; then
+            echo "Request failed with response code: $response" >> ./errors.txt
+            retries=$((retries + 1))
+            echo "Retrying in 2 seconds... (Attempt: $((retries + 1)))"
+            sleep 2
+        else
+            break 
+        fi
+    done
 
     if [[ -s $full_path ]]; then
         echo "Saved data to $full_path ✅"
+    elif [[ $retries -ge $max_retries ]]; then
+        echo "Maximum retries reached for $pokemon. No data saved." >> ./errors.txt
     else
         echo "No data was saved to $full_path ❌" 
     fi
@@ -24,5 +47,3 @@ do
     # sleep for 2 secs
     sleep 2
 done
-
-echo "All Pokemon data has been downloaded."
