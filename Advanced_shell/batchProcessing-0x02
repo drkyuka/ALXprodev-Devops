@@ -1,0 +1,25 @@
+#!/bin/bash
+base_dir="./pokemon_data"
+if [[ ! -d pokemon_data ]]; then
+    mkdir -p $base_dir
+fi
+
+for pokemon in bulbasaur ivysaur venusaur charmander charmeleon
+do
+    echo "Fetching data for $pokemon..."
+    file="pokemon.json"
+    full_path="$base_dir/$file"
+    response=$(curl -s -o $full_path --max-time 10 -w '%{http_code}' https://pokeapi.co/api/v2/pokemon/$pokemon 2> /dev/null)
+
+    if [[ "$response" -lt 200 || "$response" -ge 300 ]]; then
+        echo "Request failed with response code: $response" > ./errors.txt
+    else
+        cat /dev/null > ./errors.txt
+    fi 
+
+    if [[ -s $full_path ]]; then
+        echo "Saved data to $full_path ✅"
+    else
+        echo "No data was saved to $full_path ❌" 
+    fi
+done
