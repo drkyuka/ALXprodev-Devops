@@ -6,8 +6,8 @@ weight=$(jq -r '.weight' ./data.json)
 itype=$(jq -r '.types[0].type.name' ./data.json)
 
 # Format and display the information
-name="$(tr '[:lower:]' '[:upper:]' <<< ${iname:0:1})${iname:1}"
-type="$(tr '[:lower:]' '[:upper:]' <<< ${itype:0:1})${itype:1}"
+name="$(echo $iname | sed 's/^\(.\)/\U\1/')"
+type="$(echo $itype | sed 's/^\(.\)/\U\1/')"
 formatted_weight=$(($weight/10))
 formatted_height=$(awk -v h=$height 'BEGIN {printf "%.1f", h/10}')
 echo "$name is of $type, weighs ${formatted_weight}kg and is ${formatted_height}m tall."
