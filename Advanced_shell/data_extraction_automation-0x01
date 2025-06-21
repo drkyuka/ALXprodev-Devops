@@ -10,4 +10,4 @@ name="$(echo $iname | sed 's/^\(.\)/\U\1/')"
 type="$(echo $itype | sed 's/^\(.\)/\U\1/')"
 formatted_weight=$(($weight/10))
 formatted_height=$(awk -v h=$height 'BEGIN {printf "%.1f", h/10}')
-echo "$name is of $type, weighs ${formatted_weight}kg and is ${formatted_height}m tall."
+echo "$name is of type $type, weighs ${formatted_weight}kg, and is ${formatted_height}m tall."
