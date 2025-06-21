@@ -1,15 +1,38 @@
-Request failed with response code: 000
-Request failed with response code: 000
-Request failed with response code: 404
-Request failed with response code: 404
-Request failed with response code: 404
-Request failed with response code: 404
-Request failed with response code: 
-Request failed with response code: 
-Request failed with response code: 
-Request failed with response code: 
-Request failed with response code: 
-Request failed with response code: 
-Request failed with response code: 
-Request failed with response code: 
-Request failed with response code: 
+
+Failed to fetch data for rowen. Error code: 127
+Failed to fetch data for ivysaur. Error code: 127
+Failed to fetch data for venusaur. Error code: 127
+Failed to fetch data for charmeleon. Error code: 127
+Failed to fetch data for charmander. Error code: 127
+Failed to fetch data for rowen. Error code: 127
+Failed to fetch data for ivysaur. Error code: 127
+Failed to fetch data for charmeleon. Error code: 127
+Failed to fetch data for venusaur. Error code: 127
+Failed to fetch data for charmander. Error code: 127
+Failed to fetch data for rowen. Error code: 127
+Failed to fetch data for charmeleon. Error code: 127
+Failed to fetch data for ivysaur. Error code: 127
+Failed to fetch data for charmander. Error code: 127
+Failed to fetch data for venusaur. Error code: 127
+Failed to fetch data for charmeleon. Error code: 2
+Failed to fetch data for rowen. Error code: 2
+Failed to fetch data for charmander. Error code: 2
+Failed to fetch data for venusaur. Error code: 2
+Failed to fetch data for ivysaur. Error code: 2
+Failed to fetch data for bulbasaur. Error code: 2
+Failed to fetch data for rowen. Error code: 56
+Failed to fetch data for charmander. Error code: 129
+Failed to fetch data for bulbasaur. Error code: 129
+Failed to fetch data for venusaur. Error code: 129
+Failed to fetch data for ivysaur. Error code: 129
+Failed to fetch data for charmeleon. Error code: 129
+Failed to fetch data for rowen. Error code: 56
+Failed to fetch data for charmander. Error code: 129
+Failed to fetch data for ivysaur. Error code: 129
+Failed to fetch data for charmeleon. Error code: 129
+Failed to fetch data for venusaur. Error code: 129
+Failed to fetch data for rowen. Error code: 56
+Failed to fetch data for rowen. Error code: 56
+Failed to fetch data for venusaur. Error code: 129
+Failed to fetch data for charmander. Error code: 129
+Failed to fetch data for rowen. Error code: 56

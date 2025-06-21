@@ -10,42 +10,49 @@ else
     if [[ $? -eq 0 ]]; then
         echo "Existing files cleared."
     else
-        echo "Failed to clear existing files in $base_dir. Exiting script."
+        echo "Failed to clear existing files in $base_dir. Exiting script." >> ./errors.txt
         exit 1
     fi
 fi
 
-for pokemon in bulbasaur ivysaur venusaur charmander charmeleon
-do
-    echo "Fetching data for $pokemon..."
-    file="${pokemon}.json"  # Use pokemon name for the filename
-    full_path="$base_dir/$file"
-    retries=0
-    max_retries=3
-    while [[ ! -s $full_path && $retries -lt $max_retries ]]; do
-        echo "Attempting to download $pokemon data (Attempt: $((retries + 1)))"
-        response=$(curl -s -o $full_path --max-time 10 -w '%{http_code}' https://pokeapi.co/api/v2/pokemon/$pokemon 2> /dev/null &)
+# Define the fetch_data_with_deadline function
+fetch_data_with_deadline() {
+    local pokemon_name="$1"
+    max_timer=10
 
-        if [[ "$response" -lt 200 || "$response" -ge 300 ]]; then
-            echo "Request failed with response code: $response" >> ./errors.txt
-            retries=$((retries + 1))
-            echo "Retrying in 2 seconds... (Attempt: $((retries + 1)))"
-            sleep 2
+    (
+        # Fetch data using curl
+        echo "Fetching data for $pokemon_name..."
+        curl -sf "https://pokeapi.co/api/v2/pokemon/${pokemon_name}" -o "${base_dir}/${pokemon_name}.json" &
+        process_id=$!
+
+        # Wait for 5 seconds and then send a HUP signal to the curl process
+        echo "*** deadline of $max_timer seconds for fetching data for $pokemon_name..."
+        (sleep $max_timer && kill -HUP $process_id 2>/dev/null) &
+        timer_pid=$!
+
+        # Ensure the timer process is killed when the script exits
+        echo "-- Trap to kill timer $pokemon_name::$process_id-> $timer_pid on exit..."
+        trap "kill $timer_pid 2>/dev/null" EXIT
+
+        # Wait for the curl process to finish
+        wait $process_id
+        result=$?
+
+        # Kill the timer process if it is still running
+        if [[ $result -eq 0 ]]; then
+            echo "Data for $pokemon_name fetched successfully."
         else
-            break 
+            echo "Failed to fetch data for $pokemon_name. Error code: $result" >> ./errors.txt
         fi
-    done
+    )
+}
 
-    if [[ -s $full_path ]]; then
-        echo "Saved data to $full_path ✅"
-    elif [[ $retries -ge $max_retries ]]; then
-        echo "Maximum retries reached for $pokemon. No data saved." >> ./errors.txt
-    else
-        echo "No data was saved to $full_path ❌" 
-    fi
+for pokemon in bulbasaur ivysaur venusaur charmander charmeleon rowen; do
+    fetch_data_with_deadline "$pokemon" &
 done
 
-# Wait for all background processes to complete
+jobs
 wait
 
 echo "All data fetching operations completed."
