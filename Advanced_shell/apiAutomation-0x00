@@ -1,0 +1,7 @@
+#!/bin/bash
+response=$(curl -s -o './data.json' -w '%{http_code}' https://pokeapi.co/api/v2/pokemon/pikachu 2> /dev/null)
+if [[ "$response" -lt 200 || "$response" -ge 300 ]]; then
+    echo "Request failed with response code: $response" > ./errors.txt
+else
+    cat /dev/null > ./errors.txt
+fi
