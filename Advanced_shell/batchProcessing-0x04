@@ -48,7 +48,7 @@ fetch_data_with_deadline() {
     )
 }
 
-for pokemon in bulbasaur ivysaur venusaur charmander charmeleon rowen; do
+for pokemon in bulbasaur ivysaur venusaur charmander charmeleon; do
     fetch_data_with_deadline "$pokemon" &
 done
 
