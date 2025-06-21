@@ -1,0 +1,11 @@
+#!/bin/bash
+# Extract data from JSON file
+name=$(jq -r '.name' ./data.json)
+height=$(jq -r '.height' ./data.json)
+weight=$(jq -r '.weight' ./data.json)
+type=$(jq -r '.types[0].type.name' ./data.json)
+
+# Format and display the information
+name_cap="$(tr '[:lower:]' '[:upper:]' <<< ${name:0:1})${name:1}"
+type_cap="$(tr '[:lower:]' '[:upper:]' <<< ${type:0:1})${type:1}"
+echo "$name_cap is of $type_cap, weighs $((weight/10))kg and is $(awk -v h=$height 'BEGIN {printf "%.1f", h/10}')m tall"
