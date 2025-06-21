@@ -22,4 +22,7 @@ do
     else
         echo "No data was saved to $full_path ❌" 
     fi
+
+    # sleep for 2 secs
+    sleep 2
 done
