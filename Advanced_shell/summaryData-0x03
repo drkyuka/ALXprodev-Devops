@@ -1,0 +1,51 @@
+#!/bin/bash
+csv_file="./pokemon_report.csv"
+if [[ -f "$csv_file" ]]; then
+    rm "$csv_file"
+fi
+
+echo "CSV Report generated at: pokemon_report.csv" > $csv_file
+echo "" >> $csv_file
+echo "Name,Height(m),Weight(kg)" >> $csv_file
+
+sum_of_height=0
+sum_of_weight=0
+count=0
+
+for file in ./pokemon_data/*.json; do
+    echo "Processing file: $file"
+    count=$((count + 1))
+    if [[ -f "$file" && -s "$file" ]]; then
+        name=$(jq -r '.name' "$file" | sed 's/.*/\u&/')
+        weight=$(jq -r '.weight' "$file")
+        height=$(jq -r '.height' "$file")
+
+
+        # format the data
+        formatted_weight=$(($weight / 10))
+        formatted_height=$(awk -v h=$height 'BEGIN {printf "%.1f", h / 10}')
+
+
+        # accumulate height and weight for averages
+        sum_of_height=$(awk -v current="$sum_of_height" -v h="$formatted_height" 'BEGIN {printf "%.1f", current + h}')
+        sum_of_weight=$(awk -v current="$sum_of_weight" -v w="$formatted_weight" 'BEGIN {printf "%.1f", current + w}')
+
+        # append to CSV
+        echo "$name,$formatted_height,$formatted_weight" >> $csv_file
+    else
+        echo "No valid data found in $file, skipping..."
+        continue
+    fi
+done
+
+if [[ $count -ne 0 ]]; then
+    avg_height=$(awk -v sum="$sum_of_height" -v cnt="$count" 'BEGIN {printf "%.2f", sum / cnt}')
+    avg_weight=$(awk -v sum="$sum_of_weight" -v cnt="$count" 'BEGIN {printf "%.2f", sum / cnt}')
+
+    echo "" >> $csv_file
+    echo "Average Height: $avg_height m" >> $csv_file
+    echo "Average Weight: $avg_weight kg" >> $csv_file
+    echo "CSV report generated successfully at pokemon_report.csv"
+else
+    echo "No data found to generate the report." > $csv_file
+fi
